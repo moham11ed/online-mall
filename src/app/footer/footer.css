@@ -1,0 +1,141 @@
+/* Footer Styles */
+.custom-footer {
+  background-color: #f8f9fa;
+  color: #495057;
+  padding: 3rem 0 1.5rem;
+  border-top: 1px solid #e9ecef;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.custom-footer .footer-heading {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.custom-footer .footer-heading::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #3498db;
+}
+
+.custom-footer .footer-brand {
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.custom-footer .footer-text {
+  color: #6c757d;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.custom-footer .footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.custom-footer .footer-links li {
+  margin-bottom: 0.7rem;
+}
+
+.custom-footer .footer-links a {
+  color: #6c757d;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.custom-footer .footer-links a:hover {
+  color: #3498db;
+  padding-left: 5px;
+}
+
+.custom-footer .footer-contact-info {
+  list-style: none;
+  padding: 0;
+}
+
+.custom-footer .footer-contact-info li {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.custom-footer .footer-contact-info i {
+  margin-right: 10px;
+  color: #3498db;
+  font-size: 1.1rem;
+}
+
+.custom-footer .social-icons {
+  display: flex;
+  gap: 15px;
+}
+
+.custom-footer .social-icon {
+  color: #6c757d;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.custom-footer .social-icon:hover {
+  color: #3498db;
+  transform: translateY(-3px);
+}
+
+.custom-footer .newsletter input {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.custom-footer .newsletter button {
+  border-radius: 4px;
+}
+
+.custom-footer .footer-divider {
+  margin: 2rem 0;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.custom-footer .copyright-text {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.custom-footer .payment-methods i {
+  font-size: 1.5rem;
+  margin-left: 10px;
+  color: #6c757d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .custom-footer {
+    text-align: center;
+  }
+  
+  .custom-footer .footer-heading::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .custom-footer .footer-brand {
+    justify-content: center;
+  }
+  
+  .custom-footer .social-icons {
+    justify-content: center;
+  }
+  
+  .custom-footer .footer-contact-info li {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,48 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>Welcome Back</h2>
+      <p class="text-muted">Sign in to continue</p>
+    </div>
+    
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-with-icon">
+          <i class="bi bi-envelope"></i>
+          <input type="email" id="email" name="email" [(ngModel)]="credentials.email" required 
+                 placeholder="your@email.com">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-with-icon">
+          <i class="bi bi-lock"></i>
+          <input type="password" id="password" name="password" [(ngModel)]="credentials.password" required
+                 placeholder="Enter password">
+          <button type="button" class="password-toggle">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div *ngIf="errorMessage" class="error-message">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+      
+      <button type="submit" class="auth-button" [disabled]="!loginForm.valid || isLoading">
+        <span *ngIf="!isLoading">Login</span>
+        <span *ngIf="isLoading">
+          <i class="bi bi-arrow-repeat spin"></i> Logging in...
+        </span>
+      </button>
+      
+      <div class="auth-footer">
+        <p>Don't have an account? <a routerLink="/register" class="auth-link">Register here</a></p>
+        <p><a routerLink="/forgot-password" class="auth-link">Forgot password?</a></p>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,175 @@
+/* General Styles */
+.contact-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.section-header {
+  position: relative;
+}
+
+.section-title {
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.divider {
+  width: 80px;
+  height: 3px;
+  background-color: #3498db;
+  margin: 0 auto;
+}
+
+/* Hero Section */
+.contact-hero {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  color: #7f8c8d;
+  margin-bottom: 2rem;
+}
+
+.hero-image {
+  max-height: 300px;
+  border-radius: 10px;
+}
+
+/* Contact Methods */
+.contact-card {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  height: 100%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.contact-card:hover {
+  transform: translateY(-5px);
+}
+
+.contact-icon {
+  font-size: 2.5rem;
+  color: #3498db;
+  margin-bottom: 1.5rem;
+}
+
+.contact-method-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.contact-method-text {
+  color: #7f8c8d;
+  margin-bottom: 1rem;
+}
+
+.contact-link {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+  color: #2c3e50;
+  text-decoration: underline;
+}
+
+.chat-button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 500;
+}
+
+/* Contact Form */
+.form-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.form-control {
+  padding: 0.75rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.form-control:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+}
+
+.submit-button {
+  padding: 0.8rem 2.5rem;
+  font-weight: 600;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #2c3e50;
+  transform: translateY(-2px);
+}
+
+/* FAQ Section */
+.accordion-button {
+  font-weight: 600;
+  color: #2c3e50;
+  padding: 1.25rem;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+}
+
+.accordion-body {
+  padding: 1.25rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Map Section */
+.map-container {
+  width: 100%;
+  height: 450px;
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .contact-card {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-title {
+    font-size: 1.8rem;
+  }
+}

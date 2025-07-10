@@ -1,0 +1,80 @@
+<!-- register.component.html -->
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+          <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+          <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+      </div>
+      <h2>Create Account</h2>
+      <p class="text-muted">Join our community</p>
+    </div>
+    
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-with-icon">
+          <i class="bi bi-envelope"></i>
+          <input type="email" id="email" name="email" [(ngModel)]="userData.email" required
+                 placeholder="your@email.com">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-with-icon">
+          <i class="bi bi-lock"></i>
+          <input [type]="showPassword ? 'text' : 'password'" id="password" name="password" 
+                 [(ngModel)]="userData.password" required placeholder="Create password">
+          <button type="button" class="password-toggle" (click)="togglePasswordVisibility('password')">
+            <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="input-with-icon">
+          <i class="bi bi-lock"></i>
+          <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" 
+                 name="confirmPassword" [(ngModel)]="userData.confirmPassword" required 
+                 placeholder="Confirm password">
+          <button type="button" class="password-toggle" (click)="togglePasswordVisibility('confirmPassword')">
+            <i class="bi" [class.bi-eye]="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="role">Role</label>
+        <div class="select-with-icon">
+          <i class="bi bi-person-badge"></i>
+          <select id="role" name="role" [(ngModel)]="userData.role" required>
+            <option value="" disabled selected>Select your role</option>
+            <option value="Customer">Customer</option>
+            <option value="Admin">Admin</option>
+            <option value="Vendor">Vendor</option>
+          </select>
+        </div>
+      </div>
+      
+      <div *ngIf="errorMessage" class="error-message">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+      
+      <button type="submit" class="auth-button" [disabled]="!registerForm.valid || loading">
+        <span *ngIf="!loading">Register</span>
+        <span *ngIf="loading" class="spinner">
+          <i class="bi bi-arrow-repeat"></i>
+        </span>
+      </button>
+      
+      <div class="auth-footer">
+        <p>Already have an account? <a routerLink="/login" class="auth-link">Login here</a></p>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,1 +1,31 @@
-<p>stores works!</p>
+<div class="stores-container">
+  <h2>Our Stores</h2>
+  
+  <div *ngIf="loading" class="loading-spinner">
+    <p>Loading stores...</p>
+  </div>
+  
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+  
+  <div class="stores-grid" *ngIf="!loading && !error">
+    <div *ngFor="let store of stores" class="store-card">
+      <div class="card-header">
+        <img 
+          [src]="store.logoURL" 
+          [alt]="store.name + ' logo'" 
+          class="store-logo"
+          onerror="this.src='https://via.placeholder.com/150?text=No+Logo'"
+        >
+      </div>
+      <div class="card-body">
+        <h3 class="store-name">{{ store.name }}</h3>
+        <p class="store-description">{{ store.description }}</p>
+      </div>
+      <div class="card-footer">
+        <small class="store-date">Created: {{ store.createdAt | date:'mediumDate' }}</small>
+      </div>
+    </div>
+  </div>
+</div>

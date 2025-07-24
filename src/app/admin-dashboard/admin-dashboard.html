@@ -1,1 +1,60 @@
-<p>admin-dashboard works!</p>
+<div *ngIf="isLoading" class="loading-spinner">Loading...</div>
+<div *ngIf="!isLoading" class="dashboard-content">
+  <h1>Admin Dashboard</h1>
+  
+  <div class="stats">
+    <h2>Dashboard Statistics</h2>
+    <p>Total Sales: {{ dashboardStats.totalSales | currency }}</p>
+    <p>Total Orders: {{ dashboardStats.totalOrders }}</p>
+  </div>
+
+  <div class="recent-orders">
+    <h2>Recent Orders</h2>
+    <ul *ngFor="let order of recentOrders">
+      <li>Order ID: {{ order.id }} - Date: {{ order.date | date }}</li>
+    </ul>
+  </div>
+
+  <div class="top-products">
+    <h2>Top Products</h2>
+    <ul *ngFor="let product of topProducts">
+      <li>{{ product.name }} - Sales: {{ product.sales | currency }}</li>
+    </ul>
+  </div>
+
+  <div class="daily-sales">
+    <h2>Daily Sales</h2>
+    <ul *ngFor="let sale of dailySales">
+      <li>Date: {{ sale.date | date }} - Amount: {{ sale.amount | currency }}</li>
+    </ul>
+  </div>
+
+  <div class="commission-data">
+    <h2>Commission Data</h2>
+    <ul *ngFor="let commission of commissionData">
+      <li>Store: {{ commission.storeName }} - Commission: {{ commission.amount | currency }}</li>
+    </ul>
+  </div>
+
+  <div class="vendors">
+    <h2>Vendors</h2>
+    <ul *ngFor="let vendor of vendors">
+      <li>
+        {{ vendor.name }}
+        <button (click)="performVendorAction(vendor.id, 'approve')">Approve</button>
+        <button (click)="performVendorAction(vendor.id, 'reject')">Reject</button>
+      </li>
+    </ul>
+  </div>
+
+  <div class="users">
+    <h2>Users</h2>
+    <ul *ngFor="let user of users">
+      <li>
+        {{ user.email }} - Role: {{ user.role }}
+        <button (click)="updateUserRole(user.id, 'admin')">Make Admin</button>
+        <button (click)="deleteUser(user.id)">Delete</button>
+      </li>
+    </ul>
+  </div>
+</div>

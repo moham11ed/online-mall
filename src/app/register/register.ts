@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Auth } from '../services/auth';
+import {  AuthService } from '../services/auth';
 import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -25,7 +25,7 @@ export class Register {
   errorMessage = '';
   private authSubscription?: Subscription;
 
-  constructor(private authService: Auth, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   togglePasswordVisibility(field: 'password' | 'confirmPassword'): void {
     if (field === 'password') {

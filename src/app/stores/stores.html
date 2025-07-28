@@ -1,31 +1,42 @@
 <div class="stores-container">
-  <h2>Our Stores</h2>
+  <h2 class="section-title">Our Stores</h2>
   
-  <div *ngIf="loading" class="loading-spinner">
-    <p>Loading stores...</p>
+  <div *ngIf="loading" class="loading-spinner text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-muted">Loading stores...</p>
   </div>
   
-  <div *ngIf="error" class="error-message">
-    {{ error }}
+  <div *ngIf="error" class="error-message text-center py-5">
+    <div class="alert alert-danger" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ error }}
+    </div>
   </div>
   
   <div class="stores-grid" *ngIf="!loading && !error">
-    <div *ngFor="let store of stores" class="store-card">
+    <a 
+      *ngFor="let store of stores" 
+      class="store-card" 
+      [routerLink]="['/store', store.storeID, 'products']"
+      [style.border-top]="'5px solid ' + (store.primaryColor || '#e53935')"
+    >
       <div class="card-header">
         <img 
           [src]="store.logoURL" 
           [alt]="store.name + ' logo'" 
           class="store-logo"
-          onerror="this.src='https://via.placeholder.com/150?text=No+Logo'"
+          onerror="this.src='assets/images/no-logo.png'"
         >
       </div>
       <div class="card-body">
         <h3 class="store-name">{{ store.name }}</h3>
-        <p class="store-description">{{ store.description }}</p>
+        <!-- <p class="store-description">{{ store.description }}</p> -->
       </div>
-      <div class="card-footer">
+      <!-- <div class="card-footer">
         <small class="store-date">Created: {{ store.createdAt | date:'mediumDate' }}</small>
-      </div>
-    </div>
+      </div> -->
+    </a>
   </div>
 </div>
+

@@ -12,6 +12,8 @@ import { AuthResponse, AuthService } from './auth';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+  private isRefreshing = false;
+
   constructor(
     private authService: AuthService,
     private router: Router
@@ -19,24 +21,22 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (this.isAuthRequest(request)) {
-      console.log('Bypassing auth interceptor for:', request.url);
       return next.handle(request);
     }
 
     const token = this.authService.getToken();
-    console.log('Token retrieved:', token);
 
-    if (token && this.authService.isTokenExpired()) {
-      console.log('Token is expired, attempting to refresh');
+    if (token && this.authService.isTokenExpired() && !this.isRefreshing) {
+      this.isRefreshing = true;
       return this.authService.refreshToken().pipe(
         switchMap((response: AuthResponse) => {
-          console.log('Token refreshed successfully:', response.token);
+          this.isRefreshing = false;
           request = this.addToken(request, response.token);
           return next.handle(request);
         }),
         catchError((error) => {
-          console.error('Token refresh failed:', error);
-          this.handleUnauthorized();
+          this.isRefreshing = false;
+          this.handleAuthError();
           return throwError(() => error);
         })
       );
@@ -44,21 +44,14 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if (token) {
       request = this.addToken(request, token);
-      console.log('Request headers with token:', request.headers);
-    } else {
-      console.warn('No token found, sending request without Authorization header');
     }
 
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        console.error('HTTP Error:', error);
         if (error.status === 401) {
-          this.handleUnauthorized();
+          this.handleAuthError();
         } else if (error.status === 403) {
-          console.error('Forbidden: User may not have required permissions');
-          this.router.navigate(['/login'], {
-            queryParams: { error: 'forbidden' }
-          });
+          this.handleForbiddenError();
         }
         return throwError(() => error);
       })
@@ -68,7 +61,7 @@ export class AuthInterceptor implements HttpInterceptor {
   private addToken(request: HttpRequest<any>, token: string): HttpRequest<any> {
     return request.clone({
       setHeaders: {
-        Authorization: `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -78,29 +71,22 @@ export class AuthInterceptor implements HttpInterceptor {
     return request.url.includes('/auth/');
   }
 
-  private handleUnauthorized(): void {
-    console.log('Handling unauthorized access');
-    if (this.authService.isTokenExpired()) {
-      console.log('Token is expired, attempting refresh');
-      this.authService.refreshToken().subscribe({
-        next: () => {
-          console.log('Token refreshed successfully, reloading page');
-          window.location.reload();
-        },
-        error: (err) => {
-          console.error('Token refresh failed:', err);
-          this.authService.logout();
-          this.router.navigate(['/login'], {
-            queryParams: { returnUrl: this.router.url, error: 'unauthorized' }
-          });
-        }
-      });
-    } else {
-      console.warn('No valid token or refresh failed, logging out');
-      this.authService.logout();
-      this.router.navigate(['/login'], {
-        queryParams: { returnUrl: this.router.url, error: 'unauthorized' }
-      });
-    }
+  private handleAuthError(): void {
+    this.authService.logout();
+    this.router.navigate(['/login'], {
+      queryParams: { 
+        returnUrl: this.router.url,
+        error: 'session_expired'
+      }
+    });
+  }
+
+  private handleForbiddenError(): void {
+    this.router.navigate(['/unauthorized'], {
+      queryParams: { 
+        returnUrl: this.router.url,
+        error: 'forbidden'
+      }
+    });
   }
 }

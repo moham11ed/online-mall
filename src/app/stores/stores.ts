@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { StoreService } from '../services/store-service';
 import { DatePipe, NgIf, NgForOf } from "@angular/common";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-stores',
-  imports: [DatePipe, NgIf, NgForOf],
+  imports: [DatePipe, NgIf, NgForOf, RouterLink],
   templateUrl: './stores.html',
   styleUrl: './stores.css'
 })
@@ -33,5 +34,3 @@ export class Stores {
     });
   }
 }
-
-

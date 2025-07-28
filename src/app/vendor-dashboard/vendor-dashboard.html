@@ -1,1 +1,286 @@
-<p>vendor-dashboard works!</p>
+<div class="vendor-dashboard">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <h2>Vendor Dashboard</h2>
+    <div class="store-info" *ngIf="store">
+      <img [src]="store.logoURL || 'assets/default-store.png'" alt="Store Logo" class="store-logo">
+      <h3>{{ store.name }}</h3>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <nav class="dashboard-nav">
+    <button (click)="changeTab('products')" [class.active]="activeTab === 'products'">Products</button>
+    <button (click)="changeTab('orders')" [class.active]="activeTab === 'orders'">Orders</button>
+    <button (click)="changeTab('store')" [class.active]="activeTab === 'store'">Store Settings</button>
+    <button (click)="changeTab('offers')" [class.active]="activeTab === 'offers'">Offers</button>
+  </nav>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Products Tab -->
+  <div *ngIf="activeTab === 'products'" class="tab-content">
+    <h3>Product Management</h3>
+    
+    <!-- Product List -->
+    <div *ngIf="!showProductForm">
+      <button (click)="showAddProductForm()" class="btn btn-primary">Add New Product</button>
+      
+      <div *ngIf="products.length === 0" class="empty-state">
+        <p>No products found. Add your first product!</p>
+      </div>
+
+      <div class="product-grid">
+        <div *ngFor="let product of products" class="product-card">
+          <img [src]="product.imageURL || 'assets/default-product.png'" alt="Product Image">
+          <div class="product-info">
+            <h4>{{ product.name }}</h4>
+            <p class="price">${{ product.price | number:'1.2-2' }} 
+              <span *ngIf="product.discount > 0" class="discount">({{ product.discount }}% off)</span>
+            </p>
+            <p class="quantity">{{ product.quantity }} in stock</p>
+            <div class="product-actions">
+              <button (click)="showEditProductForm(product)" class="btn btn-edit">Edit</button>
+              <button (click)="deleteProduct(product.productID)" class="btn btn-delete">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Form -->
+    <div *ngIf="showProductForm" class="product-form-container">
+      <h4>{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h4>
+      
+      <form [formGroup]="productForm" (ngSubmit)="submitProduct()">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" formControlName="name" class="form-control">
+          <div *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched" class="error-message">
+            Name is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea formControlName="description" class="form-control"></textarea>
+          <div *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched" class="error-message">
+            Description is required
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Price ($)</label>
+            <input type="number" step="0.01" formControlName="price" class="form-control">
+            <div *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched" class="error-message">
+              Valid price is required (min $0.01)
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" formControlName="quantity" class="form-control">
+            <div *ngIf="productForm.get('quantity')?.invalid && productForm.get('quantity')?.touched" class="error-message">
+              Valid quantity is required (min 0)
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Discount (%)</label>
+            <input type="number" formControlName="discount" class="form-control">
+            <div *ngIf="productForm.get('discount')?.invalid && productForm.get('discount')?.touched" class="error-message">
+              Discount must be between 0-100%
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Product Image</label>
+          <input type="file" (change)="onImageChange($event)" accept="image/*" class="form-control">
+          <div *ngIf="imagePreview" class="image-preview">
+            <img [src]="imagePreview" alt="Product Preview">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid">
+            {{ isEditMode ? 'Update' : 'Add' }} Product
+          </button>
+          <button type="button" (click)="cancelForm()" class="btn btn-secondary">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Orders Tab -->
+  <div *ngIf="activeTab === 'orders'" class="tab-content">
+    <h3>Order Management</h3>
+    
+    <div *ngIf="orders.length === 0" class="empty-state">
+      <p>No orders found.</p>
+    </div>
+
+    <div class="order-list">
+      <div *ngFor="let order of orders" class="order-card">
+        <div class="order-header">
+          <span>Order #{{ order.orderID }}</span>
+          <span>{{ order.orderDate | date:'medium' }}</span>
+        </div>
+        
+        <div class="order-body">
+          <p><strong>Customer:</strong> {{ order.customer }}</p>
+          <p><strong>Total:</strong> ${{ order.totalAmount | number:'1.2-2' }}</p>
+          <p><strong>Status:</strong> 
+            <select [(ngModel)]="order.status" (change)="updateOrderStatus(order.orderID, order.status)">
+              <option value="Pending">Pending</option>
+              <option value="Processing">Processing</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </p>
+          
+          <div class="order-items">
+            <h5>Items:</h5>
+            <ul>
+              <li *ngFor="let item of order.items">
+                {{ item.name }} ({{ item.quantity }} × ${{ item.priceAtTime | number:'1.2-2' }})
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Store Settings Tab -->
+  <div *ngIf="activeTab === 'store'" class="tab-content">
+    <h3>Store Settings</h3>
+    
+    <form [formGroup]="storeForm" (ngSubmit)="updateStore()" *ngIf="store">
+      <div class="form-group">
+        <label>Store Name</label>
+        <input type="text" formControlName="name" class="form-control">
+        <div *ngIf="storeForm.get('name')?.invalid && storeForm.get('name')?.touched" class="error-message">
+          Store name is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea formControlName="description" class="form-control"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Primary Color</label>
+          <input type="color" formControlName="primaryColor" class="form-control color-picker">
+        </div>
+
+        <div class="form-group">
+          <label>Secondary Color</label>
+          <input type="color" formControlName="secondaryColor" class="form-control color-picker">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Keywords (comma separated)</label>
+        <input type="text" formControlName="keywords" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label>Store Logo</label>
+        <input type="file" (change)="onLogoChange($event)" accept="image/*" class="form-control">
+        <div *ngIf="logoPreview" class="logo-preview">
+          <img [src]="logoPreview" alt="Logo Preview">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="storeForm.invalid">Save Changes</button>
+        <button type="button" class="btn btn-success" (click)="connectStripe()">Connect Payment Account</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Offers Tab -->
+  <div *ngIf="activeTab === 'offers'" class="tab-content">
+    <h3>Special Offers</h3>
+    
+    <!-- Offers List -->
+    <div *ngIf="!showOfferForm">
+      <button (click)="showAddOfferForm()" class="btn btn-primary">Create New Offer</button>
+      
+      <div *ngIf="offers.length === 0" class="empty-state">
+        <p>No active offers. Create your first offer!</p>
+      </div>
+
+      <div class="offers-list">
+        <div *ngFor="let offer of offers" class="offer-card">
+          <div class="offer-header">
+            <h4>{{ offer.productName }}</h4>
+            <span class="price">${{ offer.newPrice | number:'1.2-2' }} <small>was ${{ offer.originalPrice | number:'1.2-2' }}</small></span>
+          </div>
+          <div class="offer-dates">
+            <span>{{ offer.startDate | date:'shortDate' }} to {{ offer.endDate | date:'shortDate' }}</span>
+          </div>
+          <button (click)="deleteOffer(offer.offerID)" class="btn btn-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Offer Form -->
+    <div *ngIf="showOfferForm" class="offer-form-container">
+      <h4>Create New Offer</h4>
+      
+      <form [formGroup]="offerForm" (ngSubmit)="submitOffer()">
+        <div class="form-group">
+          <label>Product</label>
+          <select formControlName="productId" class="form-control">
+            <option value="">Select a product</option>
+            <option *ngFor="let product of products" [value]="product.productID">
+              {{ product.name }} (${{ product.price | number:'1.2-2' }})
+            </option>
+          </select>
+          <div *ngIf="offerForm.get('productId')?.invalid && offerForm.get('productId')?.touched" class="error-message">
+            Please select a product
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>New Price ($)</label>
+          <input type="number" step="0.01" formControlName="newPrice" class="form-control">
+          <div *ngIf="offerForm.get('newPrice')?.invalid && offerForm.get('newPrice')?.touched" class="error-message">
+            Valid price is required (min $0.01)
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="datetime-local" formControlName="startDate" class="form-control">
+            <div *ngIf="offerForm.get('startDate')?.invalid && offerForm.get('startDate')?.touched" class="error-message">
+              Start date is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>End Date</label>
+            <input type="datetime-local" formControlName="endDate" class="form-control">
+            <div *ngIf="offerForm.get('endDate')?.invalid && offerForm.get('endDate')?.touched" class="error-message">
+              End date is required
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="offerForm.invalid">Create Offer</button>
+          <button type="button" (click)="cancelForm()" class="btn btn-secondary">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

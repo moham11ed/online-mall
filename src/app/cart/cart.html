@@ -1,3 +1,4 @@
+<!-- cart.component.html -->
 <div class="container py-5">
   <div class="card shadow">
     <div class="card-header bg-primary text-white">
@@ -6,29 +7,39 @@
     
     <div class="card-body">
       <!-- Empty cart message -->
-      <div *ngIf="sellerGroups.length === 0" class="empty-cart text-center py-5">
+      <div *ngIf="cartService.getCart().length === 0" class="empty-cart text-center py-5">
         <i class="bi bi-cart-x text-muted" style="font-size: 5rem;"></i>
         <h3 class="mt-3">Your cart is empty</h3>
         <p class="text-muted">Start shopping to add items to your cart</p>
-        <a routerLink="/products" class="btn btn-primary mt-3">Continue Shopping</a>
+        <a routerLink="/stores" class="btn btn-primary mt-3">Continue Shopping</a>
       </div>
       
       <!-- Seller groups -->
-      <div *ngFor="let group of sellerGroups; let groupIndex = index" class="seller-group mb-4 border-bottom pb-4">
+      <div *ngFor="let group of cartService.getCart(); let groupIndex = index" class="seller-group mb-4 border-bottom pb-4">
         <div class="seller-header d-flex align-items-center mb-3">
-          <img [src]="group.seller.logo" [alt]="group.seller.name" class="seller-logo rounded-circle me-3" width="40" height="40">
+          <img [src]="group.seller.logoURL" [alt]="group.seller.name" class="seller-logo rounded-circle me-3" width="40" height="40">
           <h3 class="mb-0">{{ group.seller.name }}</h3>
         </div>
         
         <div class="products-list">
-          <div *ngFor="let product of group.products; let productIndex = index" class="product-item row align-items-center mb-3 py-2 bg-light rounded">
+          <div *ngFor="let item of group.products; let productIndex = index" class="product-item row align-items-center mb-3 py-2 bg-light rounded">
             <div class="col-md-2 col-4">
-              <img [src]="product.image" [alt]="product.name" class="product-image img-fluid rounded">
+              <img [src]="item.product.imageURL" [alt]="item.product.name" class="product-image img-fluid rounded">
             </div>
             
             <div class="col-md-4 col-8">
-              <h5 class="mb-1">{{ product.name }}</h5>
-              <div class="text-muted">${{ product.price.toFixed(2) }}</div>
+              <h5 class="mb-1">{{ item.product.name }}</h5>
+              <div class="text-muted">
+                <span *ngIf="item.product.discount > 0" class="text-decoration-line-through me-2">
+                  {{ item.product.price | currency }}
+                </span>
+                <span>
+                  {{ (item.product.price - (item.product.price * (item.product.discount || 0) / 100)) | currency }}
+                </span>
+                <span *ngIf="item.product.discount > 0" class="badge bg-danger ms-2">
+                  {{ item.product.discount }}% OFF
+                </span>
+              </div>
             </div>
             
             <div class="col-md-3 col-8 mt-md-0 mt-2">
@@ -36,7 +47,7 @@
                 <button class="btn btn-outline-secondary" (click)="decreaseQuantity(groupIndex, productIndex)">
                   <i class="bi bi-dash"></i>
                 </button>
-                <input type="text" class="form-control text-center" [value]="product.quantity" readonly>
+                <input type="text" class="form-control text-center" [value]="item.quantity" readonly>
                 <button class="btn btn-outline-secondary" (click)="increaseQuantity(groupIndex, productIndex)">
                   <i class="bi bi-plus"></i>
                 </button>
@@ -44,7 +55,7 @@
             </div>
             
             <div class="col-md-2 col-4 text-md-center text-end">
-              <strong>${{ (product.price * product.quantity).toFixed(2) }}</strong>
+              <strong>{{ (item.product.price - (item.product.price * (item.product.discount || 0) / 100)) * item.quantity | currency }}</strong>
             </div>
             
             <div class="col-md-1 col-12 text-md-end text-center mt-md-0 mt-2">
@@ -56,12 +67,12 @@
         </div>
         
         <div class="seller-subtotal text-end mt-3">
-          <h5>Subtotal: <span class="text-primary">${{ calculateSubtotal(group).toFixed(2) }}</span></h5>
+          <h5>Subtotal: <span class="text-primary">{{ calculateSubtotal(group) | currency }}</span></h5>
         </div>
       </div>
       
       <!-- Cart total and checkout -->
-      <div *ngIf="sellerGroups.length > 0" class="cart-total border-top pt-4 mt-4">
+      <div *ngIf="cartService.getCart().length > 0" class="cart-total border-top pt-4 mt-4">
         <div class="row">
           <div class="col-md-6">
             <div class="input-group mb-3">
@@ -72,7 +83,7 @@
           <div class="col-md-6">
             <div class="d-flex justify-content-between mb-2">
               <span>Subtotal:</span>
-              <span>${{ calculateTotal().toFixed(2) }}</span>
+              <span>{{ calculateTotal() | currency }}</span>
             </div>
             <div class="d-flex justify-content-between mb-2">
               <span>Shipping:</span>
@@ -80,17 +91,17 @@
             </div>
             <div class="d-flex justify-content-between mb-3">
               <span>Tax:</span>
-              <span>${{ (calculateTotal() * 0.1).toFixed(2) }}</span>
+              <span>{{ calculateTotal() * 0.1 | currency }}</span>
             </div>
             <div class="d-flex justify-content-between total-price">
               <h4>Total:</h4>
-              <h4 class="text-primary">${{ (calculateTotal() * 1.1).toFixed(2) }}</h4>
+              <h4 class="text-primary">{{ calculateTotal() * 1.1 | currency }}</h4>
             </div>
             <button class="btn btn-primary btn-lg w-100 mt-3 checkout-btn">
               <i class="bi bi-lock-fill me-2"></i>Proceed to Checkout
             </button>
             <div class="text-center mt-3">
-              <a routerLink="/products" class="text-muted">
+              <a routerLink="/stores" class="text-muted">
                 <i class="bi bi-arrow-left me-1"></i>Continue Shopping
               </a>
             </div>
@@ -100,4 +111,3 @@
     </div>
   </div>
 </div>
-

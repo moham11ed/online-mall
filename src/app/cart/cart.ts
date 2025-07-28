@@ -1,83 +1,35 @@
 import { Component } from '@angular/core';
-import { NgForOf, NgIf } from "@angular/common";
+import { NgForOf, NgIf, CurrencyPipe } from "@angular/common";
+import { CartService } from '../services/cart';
+
 
 @Component({
   selector: 'app-cart',
-  imports: [NgForOf, NgIf],
+  imports: [NgForOf, NgIf, CurrencyPipe],
   templateUrl: './cart.html',
   styleUrl: './cart.css',
   standalone: true
 })
 export class Cart {
-  sellerGroups = [
-    {
-      seller: {
-        id: 1,
-        name: 'Tech Gadgets',
-        logo: 'https://via.placeholder.com/50'
-      },
-      products: [
-        {
-          id: 101,
-          name: 'Wireless Headphones',
-          image: 'https://via.placeholder.com/80',
-          price: 99.99,
-          quantity: 2
-        },
-        {
-          id: 102,
-          name: 'Bluetooth Speaker',
-          image: 'https://via.placeholder.com/80',
-          price: 59.99,
-          quantity: 1
-        }
-      ]
-    },
-    {
-      seller: {
-        id: 2,
-        name: 'Fashion House',
-        logo: 'https://via.placeholder.com/50'
-      },
-      products: [
-        {
-          id: 201,
-          name: 'Men\'s T-Shirt',
-          image: 'https://via.placeholder.com/80',
-          price: 24.99,
-          quantity: 3
-        }
-      ]
-    }
-  ];
+  constructor(public cartService: CartService) {}
+
+  increaseQuantity(groupIndex: number, productIndex: number): void {
+    this.cartService.increaseQuantity(groupIndex, productIndex);
+  }
+
+  decreaseQuantity(groupIndex: number, productIndex: number): void {
+    this.cartService.decreaseQuantity(groupIndex, productIndex);
+  }
+
+  removeProduct(groupIndex: number, productIndex: number): void {
+    this.cartService.removeProduct(groupIndex, productIndex);
+  }
 
   calculateSubtotal(group: any): number {
-    return group.products.reduce((sum: number, product: any) => {
-      return sum + (product.price * product.quantity);
-    }, 0);
+    return this.cartService.calculateSubtotal(group);
   }
 
   calculateTotal(): number {
-    return this.sellerGroups.reduce((sum, group) => {
-      return sum + this.calculateSubtotal(group);
-    }, 0);
-  }
-
-  increaseQuantity(groupIndex: number, productIndex: number) {
-    this.sellerGroups[groupIndex].products[productIndex].quantity++;
-  }
-
-  decreaseQuantity(groupIndex: number, productIndex: number) {
-    if (this.sellerGroups[groupIndex].products[productIndex].quantity > 1) {
-      this.sellerGroups[groupIndex].products[productIndex].quantity--;
-    }
-  }
-
-  removeProduct(groupIndex: number, productIndex: number) {
-    this.sellerGroups[groupIndex].products.splice(productIndex, 1);
-    
-    if (this.sellerGroups[groupIndex].products.length === 0) {
-      this.sellerGroups.splice(groupIndex, 1);
-    }
+    return this.cartService.calculateTotal();
   }
 }

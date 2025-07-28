@@ -1,0 +1,42 @@
+<!-- products.component.html -->
+<div class="products-container">
+  <div *ngIf="loading" class="loading-spinner">
+    <p>Loading products...</p>
+  </div>
+  
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <h2>Products</h2>
+    
+    <div class="products-grid">
+      <div *ngFor="let product of products" class="product-card">
+        <div class="product-image-container" [routerLink]="['/product', product.productID]">
+          <img 
+            [src]="product.imageURL" 
+            [alt]="product.name" 
+            class="product-image"
+            onerror="this.src='https://via.placeholder.com/300?text=No+Image'"
+          >
+        </div>
+        <div class="product-details">
+          <h3 class="product-name" [routerLink]="['/product', product.productID]">{{ product.name }}</h3>
+          <div class="product-pricing">
+            <span class="original-price" *ngIf="product.discount > 0">
+              {{ product.price | currency }}
+            </span>
+            <span class="discounted-price">
+              {{ calculateDiscountedPrice(product.price, product.discount) | currency }}
+            </span>
+            <span class="discount-badge" *ngIf="product.discount > 0">
+              {{ product.discount }}% OFF
+            </span>
+          </div>
+          <button class="add-to-cart-btn" (click)="addToCart(product)">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

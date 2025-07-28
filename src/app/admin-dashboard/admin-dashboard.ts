@@ -38,7 +38,7 @@ export class AdminDashboard implements OnInit {
       return;
     }
 
-    if (!this.authService.isInRole('admin')) {
+    if (!this.authService.isInRole('Admin')) {
       console.error('User does not have admin role');
       alert('You are not authorized to access the admin dashboard.');
       this.router.navigate(['/login'], { queryParams: { error: 'not-authorized' } });
